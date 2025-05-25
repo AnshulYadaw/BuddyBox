@@ -1,0 +1,43 @@
+{
+  "name": "buddybox-web-panel",
+  "version": "1.0.0",
+  "description": "Comprehensive web panel with DNS, Email, Security, and Database management",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/server.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd client && npm install",
+    "setup": "node scripts/setup.js",
+    "start": "node server/server.js"
+  },
+  "keywords": ["web-panel", "dns", "email", "security", "postgresql", "admin"],
+  "author": "BuddyBox Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "nodemailer": "^6.9.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "express-rate-limit": "^6.8.1",
+    "socket.io": "^4.7.2",
+    "axios": "^1.5.0",
+    "moment": "^2.29.4",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1",
+    "winston": "^3.10.0",
+    "node-cron": "^3.0.2",
+    "archiver": "^5.3.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.0"
+  }
+}
