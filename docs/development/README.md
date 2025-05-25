@@ -68,6 +68,48 @@ npm install
 npm link  # For development
 ```
 
+## VM Installation
+
+1. **SSH into your VM**
+```bash
+ssh user@your-vm-ip
+```
+
+2. **Clone the repository**
+```bash
+git clone https://github.com/buddybox/buddybox.git
+cd buddybox
+```
+
+3. **Run the installation script**
+```bash
+sudo ./scripts/install.sh
+```
+
+4. **Run the setup script**
+```bash
+sudo ./scripts/setup.sh
+```
+
+The installation script will:
+- Install required system packages
+- Set up Node.js and npm
+- Install and configure MongoDB
+- Install PM2 for process management
+- Set up the project structure
+- Configure nginx
+- Create necessary environment files
+- Install all dependencies
+- Build the frontend
+- Start the services
+
+The setup script will:
+- Generate a secure JWT secret
+- Configure the firewall
+- Set up SSL with Let's Encrypt (if available)
+- Create an admin user
+- Restart all services
+
 ## Development Workflow
 
 1. **Branch Strategy**
