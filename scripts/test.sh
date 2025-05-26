@@ -80,7 +80,7 @@ print_step "Starting automated testing..."
 print_step "Checking system requirements..."
 check_command node
 check_command npm
-check_command mongod
+check_command psql
 check_command nginx
 check_command pm2
 
@@ -88,12 +88,12 @@ check_command pm2
 print_step "Checking software versions..."
 check_version node "v18"
 check_version npm
-check_version mongod
+check_version psql
 check_version nginx
 
 # Check services
 print_step "Checking services..."
-check_service mongod
+check_service postgresql
 check_service nginx
 
 # Check ports
@@ -101,6 +101,7 @@ print_step "Checking ports..."
 check_port 80
 check_port 443
 check_port 5000
+check_port 5432
 
 # Check PM2 processes
 print_step "Checking PM2 processes..."
@@ -110,12 +111,20 @@ else
     print_error "Backend service is not running in PM2"
 fi
 
-# Check MongoDB connection
-print_step "Testing MongoDB connection..."
-if mongosh --eval "db.runCommand({ ping: 1 })" &> /dev/null; then
-    print_success "MongoDB connection successful"
+# Check PostgreSQL connection
+print_step "Testing PostgreSQL connection..."
+if sudo -u postgres psql -c "\l" | grep -q "buddybox"; then
+    print_success "PostgreSQL database exists"
 else
-    print_error "MongoDB connection failed"
+    print_error "PostgreSQL database not found"
+fi
+
+# Check database tables
+print_step "Checking database tables..."
+if sudo -u postgres psql -d buddybox -c "\dt" | grep -q "users"; then
+    print_success "Users table exists"
+else
+    print_error "Users table not found"
 fi
 
 # Check nginx configuration
@@ -197,13 +206,17 @@ print_step "Generating test report..."
     echo ""
     echo "Service Status:"
     echo "--------------"
-    systemctl status mongod | grep "Active:"
+    systemctl status postgresql | grep "Active:"
     systemctl status nginx | grep "Active:"
     pm2 list | grep "buddybox-backend"
     echo ""
+    echo "Database Status:"
+    echo "---------------"
+    sudo -u postgres psql -d buddybox -c "\dt"
+    echo ""
     echo "Port Status:"
     echo "-----------"
-    netstat -tuln | grep -E ':80|:443|:5000'
+    netstat -tuln | grep -E ':80|:443|:5000|:5432'
     echo ""
     echo "Resource Usage:"
     echo "--------------"

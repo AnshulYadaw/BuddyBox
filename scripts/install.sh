@@ -34,14 +34,16 @@ print_step "Installing Node.js and npm..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 
-# Install MongoDB
-print_step "Installing MongoDB..."
-wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-apt-get update
-apt-get install -y mongodb-org
-systemctl start mongod
-systemctl enable mongod
+# Install PostgreSQL
+print_step "Installing PostgreSQL..."
+apt-get install -y postgresql postgresql-contrib
+
+# Configure PostgreSQL
+print_step "Configuring PostgreSQL..."
+sudo -u postgres psql -c "CREATE USER buddybox WITH PASSWORD 'buddybox123';"
+sudo -u postgres psql -c "CREATE DATABASE buddybox;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE buddybox TO buddybox;"
+sudo -u postgres psql -c "ALTER USER buddybox WITH SUPERUSER;"
 
 # Install PM2 globally
 print_step "Installing PM2..."
@@ -52,9 +54,9 @@ print_step "Setting up project directory..."
 mkdir -p /opt/buddybox
 cd /opt/buddybox
 
-# Clone repository (replace with your actual repository URL)
+# Clone repository
 print_step "Cloning repository..."
-git clone https://github.com/buddybox/buddybox.git .
+git clone https://github.com/AnshulYadaw/BuddyBox.git .
 
 # Create environment files
 print_step "Creating environment files..."
@@ -65,8 +67,8 @@ cat > backend/.env << 'EOL'
 PORT=5000
 NODE_ENV=production
 
-# MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/buddybox
+# PostgreSQL Configuration
+DATABASE_URL=postgres://buddybox:buddybox123@localhost:5432/buddybox
 
 # JWT Configuration
 JWT_SECRET=your-secret-key-here
@@ -100,6 +102,11 @@ print_step "Installing CLI dependencies..."
 cd ../cli
 npm install
 npm link
+
+# Run database migrations
+print_step "Running database migrations..."
+cd ../backend
+npx sequelize-cli db:migrate
 
 # Build frontend
 print_step "Building frontend..."
