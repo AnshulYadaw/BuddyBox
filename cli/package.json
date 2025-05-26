@@ -4,7 +4,7 @@
   "description": "BuddyBox Command Line Interface",
   "main": "src/index.js",
   "bin": {
-    "buddybox": "./src/index.js"
+    "bbox": "./src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",
